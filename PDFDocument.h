@@ -44,6 +44,8 @@ public:
 private:
 	map<int, QString>   m_allPageFileName;
 	map<int, QPixmap>   m_allPagePixmap;
+	map<int, QPixmap>   m_allTableCheckedPixmap;
+	map<int, QPimxap>   m_allParaCheckedPixmap;
 	map<int, QPixmap>   m_allCheckedPixmap;
 
 	CInterpreterFactory*   m_pFactory;
