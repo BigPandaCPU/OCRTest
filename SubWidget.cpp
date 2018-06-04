@@ -8,12 +8,10 @@
 
 SubWidget::SubWidget( QString fileName):
 	m_isChecked(false),
-	m_parentTabWidget(NULL)
+	m_parentTabWidget(NULL),
+	m_checkedView(NULL),
+	m_checkedScene(NULL)
 {
-	//bool isLoad = m_oriPixmap.load(fileName);
-	//if( !isLoad )
-		//QMessageBox::warning(this,"Failed load","Load Image Filed!");
-		
 	QRect rect = geometry();
     
 	QFileInfo  fileInfo = QFileInfo( fileName );
@@ -31,6 +29,7 @@ SubWidget::SubWidget( QString fileName):
 	
 	QGraphicsView *view = new QGraphicsView();
 	view->setScene( m_oriScene );
+	view->centerOn(0,0);
 
 	m_hLayout = new QHBoxLayout;
 	m_hLayout->addWidget(view);
@@ -42,19 +41,41 @@ SubWidget::SubWidget( QString fileName):
 void SubWidget::addWidget( QPixmap pixMap )
 {
 	m_currentCheckedPixmap = pixMap;
-	QGraphicsPixmapItem *pixmapItem = new QGraphicsPixmapItem;
-	pixmapItem->setPixmap( pixMap );
+	QGraphicsPixmapItem *newPixmapItem = new QGraphicsPixmapItem;
+	newPixmapItem->setPixmap( m_currentCheckedPixmap );
 
-	m_checkedScene = new QGraphicsScene;
-	m_checkedScene->addItem( pixmapItem );
-	m_checkedScene->setBackgroundBrush( Qt::gray );
+	if( m_checkedView == NULL )
+	{
+		m_checkedScene = new QGraphicsScene;
+		m_checkedScene->addItem( newPixmapItem );
+		m_checkedScene->setBackgroundBrush( Qt::gray );
 
-	QGraphicsView *view = new QGraphicsView();
-	view->setScene( m_checkedScene );
+		m_checkedView = new QGraphicsView();
+		m_checkedView->setScene( m_checkedScene );
+		m_checkedView->centerOn(0,0);
 
-	m_hLayout->addWidget( view );
-	update();
-
+		m_hLayout->addWidget( m_checkedView );
+	}
+	else
+	{
+		if(  m_checkedScene != NULL )
+		{
+			QList<QGraphicsItem*> all = m_checkedScene->items();
+			for (int i = 0; i < all.size(); i++)
+			{
+				QGraphicsItem *gi = all[i];
+				if(gi->parentItem()==NULL) 
+				{
+					delete gi;
+				}
+			}
+			m_checkedScene->update();
+			m_checkedScene->removeItem( m_checkedScene->focusItem() );
+			m_checkedScene->addItem( newPixmapItem );
+		}
+		
+	}
+	updateWidget();
 	m_isChecked = true;
 }
 
@@ -219,6 +240,34 @@ void SubWidget::getLastPageSlot()
 		emit subWidgetChangedSignal();
 	}
 }
+
+void SubWidget::setParaCheckedModeSlot()
+{
+   	int page = m_Doc->getCurrentPage();
+	m_Doc->setCurrentMode( SACPARA );
+	m_Doc->getPage(page);
+	updateWidget( m_Doc->getCurrentRate() );
+	emit subWidgetChangedSignal();
+}
+
+void SubWidget::setTableCheckedModeSlot()
+{
+   	int page = m_Doc->getCurrentPage();
+	m_Doc->setCurrentMode( SACTABLE );
+	m_Doc->getPage(page);
+	updateWidget( m_Doc->getCurrentRate() );
+	emit subWidgetChangedSignal();
+}
+
+void SubWidget::setFormulaCheckedModeSlot()
+{
+   	int page = m_Doc->getCurrentPage();
+	m_Doc->setCurrentMode( SACFORMULA );
+	m_Doc->getPage(page);
+	updateWidget( m_Doc->getCurrentRate() );
+	emit subWidgetChangedSignal();
+}
+
 
 Document* SubWidget::getDocument() const
 {

@@ -32,7 +32,6 @@ public slots:
 	void updateStatusBar();
 
 private:
-	//Ui::OCRTestClass ui;
 	CentralWidget     *m_centralWidget;
 
 	QString           getFileNameFromPath( QString filePath );
@@ -63,10 +62,12 @@ private:
 	void              createMenus();
 	void              createToolBars();
 	void              createStatusBars();
-	void              createPageControl();
 
 public slots:
 	void              updateStatusSlot();
+	void              sacParaCheckSlot();
+	void              sacTableCheckSlot();
+	void              sacFormulaCheckSlot();
 };
 
 #endif // OCRTEST_H

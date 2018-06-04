@@ -27,7 +27,6 @@
 OCRTest::OCRTest(QWidget *parent)
 	: QMainWindow(parent)
 {
-	//ui.setupUi(this);
 	m_centralWidget = new CentralWidget();
 	this->setCentralWidget( m_centralWidget );
 	createActions();
@@ -37,7 +36,6 @@ OCRTest::OCRTest(QWidget *parent)
 	setIconSize( QSize(48,48));
 
 	connect( m_centralWidget->getTabWidget(), SIGNAL( currentChanged(int) ), this,SLOT( updateStatusSlot()));
-	//ui.mainToolBar->setHidden(true);
 } 
 void OCRTest::createActions()
 {
@@ -47,12 +45,16 @@ void OCRTest::createActions()
 
 	m_sacParaCheckAction = new QAction( tr("Para Check"), this );
 	m_sacParaCheckAction->setIcon( QIcon("Icon/text.ico"));
+	connect( m_sacParaCheckAction, SIGNAL( triggered() ), this, SLOT( sacParaCheckSlot()));
+
 
 	m_sacTableCheckAction = new QAction( tr("Table Check"), this );
 	m_sacTableCheckAction->setIcon( QIcon( "Icon/table.ico") );
+	connect( m_sacTableCheckAction, SIGNAL( triggered() ), this, SLOT( sacTableCheckSlot()));
 
 	m_sacFormulaCheckAction = new QAction( tr("Formula Check"), this );
 	m_sacFormulaCheckAction->setIcon( QIcon( "Icon/formula.ico") );
+	connect( m_sacFormulaCheckAction, SIGNAL( triggered() ), this, SLOT( sacFormulaCheckSlot()));
 }
 void OCRTest::createMenus()
 {
@@ -136,12 +138,6 @@ void OCRTest::createStatusBars()
 	statusBar()->addPermanentWidget( m_imageSlider );
 
 }
-
-void OCRTest::createPageControl()
-{
-
-}
-
 
 void OCRTest::imageScaledSlot(int value)
 {
@@ -230,7 +226,6 @@ void OCRTest::autoCheckSlot()
 
 		QString sumTime1 = QString("%1 s").arg( startTime0.msecsTo( startTime1)/1000.0 );
 		QString sumTime2 = QString::number( startTime1.msecsTo( startTime2), 10 );
-		//QString sumTime = sumTime1 + QString(" ") +sumTime2;
 		QMessageBox::information(NULL, "Run time", sumTime1);
 	}
 }
@@ -247,10 +242,47 @@ void OCRTest::updateStatusSlot()
 	SubWidget *subWidget = (SubWidget*)m_centralWidget->getTabWidget()->currentWidget();
 	int currentPage = subWidget->getDocument()->getCurrentPage();
 	int sumPage     = subWidget->getDocument()->getSumPage();
+	int currentMode = subWidget->getDocument()->getCurrentMode();
+	QPixmap currentCheckedPixmap = subWidget->getDocument()->getCurrentCheckedPixmap();
 
 	m_pageLineEdit->setText( QString("%1/%2").arg(currentPage).arg(sumPage) );
 	m_imageSlider->setValue( subWidget->getCurrentRate() );
+
+	if( currentMode != BROWSE )
+	{
+		subWidget->addWidget( currentCheckedPixmap  );
+	}
+
+
 }
+
+void OCRTest::sacParaCheckSlot()
+{
+	if( m_centralWidget->getTabWidget()->count() >0 )
+	{
+		SubWidget *subWidget = (SubWidget*)m_centralWidget->getTabWidget()->currentWidget();
+		subWidget->setParaCheckedModeSlot();
+	}
+}
+
+void OCRTest::sacTableCheckSlot()
+{
+	if( m_centralWidget->getTabWidget()->count() >0 )
+	{
+		SubWidget *subWidget = (SubWidget*)m_centralWidget->getTabWidget()->currentWidget();
+		subWidget->setTableCheckedModeSlot();
+	}
+}
+
+void OCRTest::sacFormulaCheckSlot()
+{
+	if( m_centralWidget->getTabWidget()->count() >0 )
+	{
+		SubWidget *subWidget = (SubWidget*)m_centralWidget->getTabWidget()->currentWidget();
+		subWidget->setFormulaCheckedModeSlot();
+	}
+}
+
 
 void OCRTest::updateStatusBar()
 {

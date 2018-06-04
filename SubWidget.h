@@ -48,6 +48,9 @@ public slots:
 	void    getNextPageSlot();
 	void    getFirstPageSlot();
 	void    getLastPageSlot();
+	void    setParaCheckedModeSlot();
+	void    setTableCheckedModeSlot();
+	void    setFormulaCheckedModeSlot();
 
 	
 private:
@@ -58,6 +61,7 @@ private:
 	QGraphicsScene    *m_oriScene;
 	QGraphicsScene    *m_checkedScene;
 	Document          *m_Doc;
+	QGraphicsView     *m_checkedView;
 	
 
 	//int               m_currentRate;
