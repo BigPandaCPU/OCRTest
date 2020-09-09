@@ -7,4 +7,7 @@
   cache文件夹是导出的图片的存储路径，
   cache/annot文件夹是生成的xml文件的存储路径
 
-Author:BigPanda E-mail:wangxiong@founder.com State Key Laboratory of Digital Publishing Technology Date:2020-9-9
+Author:BigPanda 
+E-mail:wangxiong@founder.com 
+State Key Laboratory of Digital Publishing Technology 
+Date:2020-9-9
